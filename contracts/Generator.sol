@@ -16,14 +16,18 @@ contract Generator {
     constructor() {}
 
     function read(
-        bytes32 seed,
-        uint256 index,
+        Rand memory rand,
         uint16 count
     ) internal pure returns (bytes memory) {
         bytes memory value = new bytes(count);
 
+        if (count + rand.index > rand.seed.length) {
+            rand.seed = keccak256(abi.encodePacked(rand.seed));
+            rand.index = 0;
+        }
+
         for (uint i = 0; i < count; i++) {
-            value[i] = seed[i + index];
+            value[i] = rand.seed[i + rand.index];
         }
         return value;
     }
@@ -43,7 +47,7 @@ contract Generator {
         pure
         returns (bytes memory)
     {
-        return read(getSeed(key, genes), 0, count);
+        return read(createRand(key, genes), count);
     }
 
     function bytesToUint(bytes memory b) internal pure returns (uint256) {
@@ -57,44 +61,40 @@ contract Generator {
         return number;
     }
 
-    function getNumber(address key, uint16[] memory genes, uint16 count)
-        public
-        pure
-        returns (uint256)
-    {
-        bytes32 seed = getSeed(key, genes);
-        bytes memory nb = read(seed, 0, count);
-
-        return (bytesToUint(nb));
+    function popUInt(Rand memory rand) public pure returns (uint8 number) {
+        number = uint8(read(rand, 1)[0]);
+        rand.index += 1;
     }
 
-    function extract(
-        bytes32 seed,
-        uint count,
-        uint256 index
-    ) internal returns (bytes memory) {
-        bytes memory extracted = new bytes(count);
+    function display3GeneratedUInts(address key, uint16[] memory genes) external view {
+        Rand memory rand = createRand(key, genes);
 
-        for (uint i = 0; i < count; ) {
-            extracted[i] = seed[index + i];
-            unchecked {
-                ++i;
-            }
+        console.log('sol rnd:');
+        console.log('1:', popUInt(rand));
+        console.log('2:', popUInt(rand));
+        console.log('3:', popUInt(rand));
+        console.log('4:', popUInt(rand));
+        console.log('5:', popUInt(rand));
+    }
+
+    function dumpUInts(address key, uint16[] memory genes, uint256 count) external view returns (uint8[] memory) {
+        Rand memory rand = createRand(key, genes);
+        uint8[] memory values = new uint8[](count);
+
+        for (uint i = 0; i < count; i++) {
+            values[i] = popUInt(rand);
         }
-        return extracted;
+        return values;
     }
+
 
     function createRand(address key, uint16[] memory genes)
         public
         pure
-        returns (Rand memory)
+        returns (Rand memory rand)
     {
-        Rand memory rand;
-        bytes memory seed = abi.encodePacked(key);
-
-        rand.seed = keccak256(seed);
+        rand.seed = keccak256(abi.encodePacked(key));
         rand.genes = genes;
         rand.index = 0;
-        return rand;
     }
 }

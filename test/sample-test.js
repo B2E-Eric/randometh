@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { getHash } = require("../scripts/random");
+const Generator = require("../scripts/random");
 
 describe("Random Generation", function() {
   let instance;
@@ -10,31 +10,39 @@ describe("Random Generation", function() {
     instance = await contract.deploy();
   });
 
-  it("Should return a number", async function() {
+  it("Starts with same hash as JS", async function() {
     const [owner, user] = await ethers.getSigners();
-    const byteCount = 1;
-    const jsBytes = getHash(owner.address).substring(2, 2 + 2 * byteCount);
-    const solBytes = await instance.getBytes(
-      owner.address,
-      [0, 0, 0, 0],
-      byteCount
+    const genes = [0, 0, 0, 0];
+    const rnd = new Generator(owner.address, genes);
+
+    expect(await instance.getSeed(owner.address, genes)).to.equal(
+      "0x" + rnd.seed
     );
+  });
 
-    console.log("from:", owner.address);
-    console.log("sol :", await instance.getSeed(owner.address, [0, 0, 0, 0]));
-    console.log("js  :", getHash(owner.address));
+  it("Outputs same uint suite as JS", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const genes = [0, 0, 0, 0];
+    const address = owner.address;
 
-    console.log("bytes:", solBytes, "vs", jsBytes);
+    const rnd = new Generator(address, genes);
 
-    console.log(
-      byteCount,
-      "b nb (sol) :",
-      (await instance.getNumber(
-        owner.address,
-        [0, 0, 0, 0],
-        byteCount
-      )).toNumber()
-    );
-    console.log(byteCount, "b nb (js)  :", parseInt(jsBytes, 16));
+    const count = 128;
+    const jsValues = [...Array(count)].map(() => rnd.popUInt());
+    let solValues;
+    
+    try {
+      solValues = await instance.dumpUInts(address, genes, count);
+    } catch (err) {
+      solValues = [...Array(count)].map(() => "ERR")
+    }
+
+    console.log('uints:');
+    jsValues.forEach((v, i) => {
+      console.log(i + ':\t', v, '\t(js)', '\t', solValues[i], '\t(sol)')
+    });
+    jsValues.forEach((v, i) => {
+      expect(solValues[i]).to.equal(v);
+    });
   });
 });
