@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 contract Generator {
     struct Rand {
         bytes32 seed;
-        uint16[] genes;
+        uint8[] genes;
         bytes data;
         uint256 index;
     }
@@ -32,7 +32,7 @@ contract Generator {
         return value;
     }
 
-    function getSeed(address key, uint16[] memory genes)
+    function getSeed(address key, uint8[] memory genes)
         public
         pure
         returns (bytes32)
@@ -42,7 +42,7 @@ contract Generator {
         return (rand.seed);
     }
 
-    function getBytes(address key, uint16[] memory genes, uint16 count)
+    function getBytes(address key, uint8[] memory genes, uint16 count)
         public
         pure
         returns (bytes memory)
@@ -61,12 +61,21 @@ contract Generator {
         return number;
     }
 
-    function popUInt(Rand memory rand) public pure returns (uint8 number) {
-        number = uint8(read(rand, 1)[0]);
+    function popUInt(Rand memory rand) public pure returns (uint8) {
+        uint8 number = uint8(read(rand, 1)[0]);
+
+        uint256 mask = 1;
+        for (uint i = 0; i < rand.genes.length; i++) {
+            if ((rand.index & mask) == 1) {
+                number = uint8(number + (rand.genes[i] / 2) % 256);
+            }
+            mask *= 2;
+        }
         rand.index += 1;
+        return number;
     }
 
-    function display3GeneratedUInts(address key, uint16[] memory genes) external view {
+    function display3GeneratedUInts(address key, uint8[] memory genes) external view {
         Rand memory rand = createRand(key, genes);
 
         console.log('sol rnd:');
@@ -77,7 +86,7 @@ contract Generator {
         console.log('5:', popUInt(rand));
     }
 
-    function dumpUInts(address key, uint16[] memory genes, uint256 count) external view returns (uint8[] memory) {
+    function dumpUInts(address key, uint8[] memory genes, uint256 count) external view returns (uint8[] memory) {
         Rand memory rand = createRand(key, genes);
         uint8[] memory values = new uint8[](count);
 
@@ -88,7 +97,7 @@ contract Generator {
     }
 
 
-    function createRand(address key, uint16[] memory genes)
+    function createRand(address key, uint8[] memory genes)
         public
         pure
         returns (Rand memory rand)

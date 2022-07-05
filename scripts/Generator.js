@@ -10,7 +10,7 @@ class Generator {
   }
 
   hashSeed = () => {
-    this.seed = ethers.utils.keccak256('0x' + this.seed).substring(2);
+    this.seed = ethers.utils.keccak256("0x" + this.seed).substring(2);
   };
 
   read = byteCount => {
@@ -18,16 +18,25 @@ class Generator {
     let toByte = () => fromByte() + 2 * byteCount;
 
     if (toByte() > this.seed.length) {
-        this.hashSeed();
+      this.hashSeed();
       this.index = 0;
     }
-    return this.seed.substring(fromByte(), toByte());
+
+    let mutateMask = 1;
+    let value = parseInt(this.seed.substring(fromByte(), toByte()), 16);
+    this.genes.forEach((gene, i) => { 
+        if ((this.index & mutateMask) === 1) {
+          value = (value + (gene / 2)) % 256;
+        }
+        mutateMask *= 2
+     })
+    return parseInt(value);
   };
 
   popUInt = () => {
     const value = this.read(1);
     this.index += 1;
-    return parseInt(value, 16);
+    return value;
   };
 }
 
