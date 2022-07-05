@@ -1,2 +1,2 @@
 # randometh
-Pseudo random generator from from an Ethereum address
+Pseudo random generator from an Ethereum address
