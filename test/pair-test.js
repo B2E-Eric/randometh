@@ -1,8 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const Generator = require("../scripts/random");
+const Generator = require("../scripts/Generator");
 
-describe("Random Generation", function() {
+describe("Generators pair testing", function() {
   let instance;
 
   beforeEach(async () => {
