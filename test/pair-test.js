@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const chalk = require("chalk");
 const Generator = require("../scripts/Generator");
 
 describe("Generators pair testing", function() {
@@ -30,16 +31,20 @@ describe("Generators pair testing", function() {
     const count = 128;
     const jsValues = [...Array(count)].map(() => rnd.popUInt());
     let solValues;
-    
+
     try {
       solValues = await instance.dumpUInts(address, genes, count);
     } catch (err) {
-      solValues = [...Array(count)].map(() => "ERR")
+      solValues = [...Array(count)].map(() => "ERR");
     }
 
-    console.log('uints:');
+    console.log("uints: (js) vs. (sol)");
     jsValues.forEach((v, i) => {
-      console.log(i + ':\t', v, '\t(js)', '\t', solValues[i], '\t(sol)')
+      console.log(
+        i + ":",
+        chalk.rgb(v, 255 - v, 50).visible(v),
+        chalk.rgb(v, 255 - v, 50).visible(solValues[i])
+      );
     });
     jsValues.forEach((v, i) => {
       expect(solValues[i]).to.equal(v);
