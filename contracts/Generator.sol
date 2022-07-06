@@ -3,17 +3,12 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-contract Generator {
+library Generator {
     struct Rand {
         bytes32 seed;
         uint8[] genes;
-        bytes data;
         uint256 index;
     }
-
-    uint[] internal magic = [128, 32768, 8388608, 2147483648];
-
-    constructor() {}
 
     function read(
         Rand memory rand,
@@ -29,6 +24,7 @@ contract Generator {
         for (uint i = 0; i < count; i++) {
             value[i] = rand.seed[i + rand.index];
         }
+        rand.index += count;
         return value;
     }
 
@@ -71,24 +67,12 @@ contract Generator {
             mask = 2**i;
         }
         return value;
-    } 
-
-    function popUInt(Rand memory rand) public pure returns (uint8) {
-        uint8 number = uint8(read(rand, 1)[0]);
-
-        rand.index += 1;
-        return uint8(mutate(rand.index - 1, number, rand.genes));
     }
 
-    function display3GeneratedUInts(address key, uint8[] memory genes) external view {
-        Rand memory rand = createRand(key, genes);
+    function popUInt8(Rand memory rand) internal pure returns (uint8) {
+        uint8 number = uint8(read(rand, 1)[0]);
 
-        console.log('sol rnd:');
-        console.log('1:', popUInt(rand));
-        console.log('2:', popUInt(rand));
-        console.log('3:', popUInt(rand));
-        console.log('4:', popUInt(rand));
-        console.log('5:', popUInt(rand));
+        return uint8(mutate(rand.index - 1, number, rand.genes));
     }
 
     function dumpUInts(address key, uint8[] memory genes, uint256 count) external view returns (uint8[] memory) {
@@ -96,11 +80,10 @@ contract Generator {
         uint8[] memory values = new uint8[](count);
 
         for (uint i = 0; i < count; i++) {
-            values[i] = popUInt(rand);
+            values[i] = popUInt8(rand);
         }
         return values;
     }
-
 
     function createRand(address key, uint8[] memory genes)
         public

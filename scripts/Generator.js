@@ -17,7 +17,8 @@ class Generator {
     let mutateMask = 0;
     this.genes.forEach((gene, i) => {
       if ((this.index & mutateMask) === mutateMask) {
-        value = (value + gene / 2) % 256;
+        value = value + (gene / 2) % 256;
+        value %= 256;
       }
       mutateMask = 2**(i);
     });
@@ -36,10 +37,10 @@ class Generator {
     let value = parseInt(this.seed.substring(fromByte(), toByte()), 16);
     value = this.mutate(value);
 
-    return parseInt(value);
+    return value;
   };
 
-  popUInt = () => {
+  popUInt8 = () => {
     const value = this.read(1);
     this.index += 1;
     return value;

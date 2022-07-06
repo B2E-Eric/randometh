@@ -31,8 +31,8 @@ describe("Generators pair testing", function() {
     const rnd2 = new Generator(address, genes2);
 
     const count = 128;
-    const jsValues = [...Array(count)].map(() => rnd.popUInt());
-    const jsMutateValues = [...Array(count)].map(() => rnd2.popUInt());
+    const jsValues = [...Array(count)].map(() => rnd.popUInt8());
+    const jsMutateValues = [...Array(count)].map(() => rnd2.popUInt8());
     let solValues;
     let solMutateValues;
 
