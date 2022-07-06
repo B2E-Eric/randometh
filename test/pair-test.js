@@ -62,6 +62,7 @@ describe("Generators pair testing", function() {
     });
     jsValues.forEach((v, i) => {
       expect(solValues[i]).to.equal(v);
+      expect(solMutateValues[i]).to.equal(jsMutateValues[i]);
     });
   });
 });
