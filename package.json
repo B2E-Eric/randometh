@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "chalk": "^4.0.0"
+  },
+  "scripts": {
+    "test": "npx hardhat test"
   }
 }

@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const chalk = require("chalk");
+const Generator = require("../../scripts/Generator");
 
 describe("Algorithm", function() {
   let instance;
@@ -14,7 +15,7 @@ describe("Algorithm", function() {
     instance = await contract.deploy();
   });
 
-  it("Color sample", async function() {
+  it("Generates color sample", async function() {
     const [owner, user] = await ethers.getSigners();
     const genes = [0, 0, 0, 0];
     const colors = 16;
@@ -46,5 +47,18 @@ describe("Algorithm", function() {
           .visible(`[${index}]`)
       );
     }
+  });
+
+  it("Generates uint16", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const genes = [1, 20, 40, 80];
+    const colors = 16;
+
+    const rnd = new Generator(owner.address, genes);
+    const jsValues = [...Array(10)].map(() => rnd.popUInt16())
+
+      console.log("rbg for gene mutation:");
+      console.log('sol:', ...(await instance.generateUInt16(owner.address, genes, 10)));
+      console.log('js:', ...jsValues);
   });
 });

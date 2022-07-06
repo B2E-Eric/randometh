@@ -17,4 +17,14 @@ contract Algorithm {
         rgb[2] = rand.popUInt8();
         return rgb;
     }
+
+    function generateUInt16(address key, uint8[] memory genes, uint256 count) external pure returns (uint16[] memory) {
+        Generator.Rand memory rand = key.createRand(genes);
+        uint16[] memory values = new uint16[](count);
+
+        for (uint i = 0; i < count; i ++) {
+            values[i] = rand.popUInt16();
+        }
+        return values;
+    }
 }

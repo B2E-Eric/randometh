@@ -18,7 +18,7 @@ class Generator {
     this.genes.forEach((gene, i) => {
       if ((this.index & mask) === mask) {
         value = value + (gene / 2) % 256;
-        value %= 256;
+        // value %= 256;
       }
       if (mask == 0 ) mask = 1; else mask *= 2;
     });
@@ -43,7 +43,13 @@ class Generator {
   popUInt8 = () => {
     const value = this.read(1);
     this.index += 1;
-    return value;
+    return parseInt(value % 256);
+  };
+
+  popUInt16 = () => {
+    const value = this.read(2);
+    this.index += 2;
+    return parseInt(value % 65536);
   };
 }
 

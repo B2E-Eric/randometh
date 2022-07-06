@@ -63,7 +63,7 @@ library Generator {
         uint256 mask = 0;
         for (uint i = 0; i < length; i++) {
             if ((index & mask) == mask)
-                value = uint8(value + (genes[i] / 2) % 256);
+                value = value + (genes[i] / 2) % 256;
             if (mask == 0 ) mask = 1; else mask *= 2;
         }
         return value;
@@ -71,8 +71,13 @@ library Generator {
 
     function popUInt8(Rand memory rand) internal pure returns (uint8) {
         uint8 number = uint8(read(rand, 1)[0]);
-
         return uint8(mutate(rand.index - 1, number, rand.genes));
+    }
+
+    function popUInt16(Rand memory rand) internal pure returns (uint16) {
+        uint16 number = uint16(bytesToUint(read(rand, 2)));
+
+        return uint16(mutate(rand.index - 2, number, rand.genes));
     }
 
     function dumpUInts(address key, uint8[] memory genes, uint256 count) external view returns (uint8[] memory) {
