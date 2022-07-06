@@ -61,18 +61,23 @@ contract Generator {
         return number;
     }
 
+    function mutate(uint256 index, uint value, uint8[] memory genes) internal pure returns (uint) {
+        uint length = genes.length;
+
+        uint256 mask = 0;
+        for (uint i = 0; i < length; i++) {
+            if ((index & mask) == mask)
+                value = uint8(value + (genes[i] / 2) % 256);
+            mask = 2**i;
+        }
+        return value;
+    } 
+
     function popUInt(Rand memory rand) public pure returns (uint8) {
         uint8 number = uint8(read(rand, 1)[0]);
 
-        uint256 mask = 1;
-        for (uint i = 0; i < rand.genes.length; i++) {
-            if ((rand.index & mask) == 1) {
-                number = uint8(number + (rand.genes[i] / 2) % 256);
-            }
-            mask *= 2;
-        }
         rand.index += 1;
-        return number;
+        return uint8(mutate(rand.index - 1, number, rand.genes));
     }
 
     function display3GeneratedUInts(address key, uint8[] memory genes) external view {

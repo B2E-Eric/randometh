@@ -20,3 +20,4 @@ npx hardhat test
 Solidity Generator contract at [./contracts/Generator.sol](/contracts/Generator.sol)
 
 Javascript Generator class at [./scripts/Generator.js](./scripts/Generator.js)
+r
