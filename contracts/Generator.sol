@@ -64,7 +64,7 @@ library Generator {
         for (uint i = 0; i < length; i++) {
             if ((index & mask) == mask)
                 value = uint8(value + (genes[i] / 2) % 256);
-            mask = 2**i;
+            if (mask == 0 ) mask = 1; else mask *= 2;
         }
         return value;
     }

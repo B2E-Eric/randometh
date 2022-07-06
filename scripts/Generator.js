@@ -14,13 +14,13 @@ class Generator {
   };
 
   mutate = value => {
-    let mutateMask = 0;
+    let mask = 0;
     this.genes.forEach((gene, i) => {
-      if ((this.index & mutateMask) === mutateMask) {
+      if ((this.index & mask) === mask) {
         value = value + (gene / 2) % 256;
         value %= 256;
       }
-      mutateMask = 2**(i);
+      if (mask == 0 ) mask = 1; else mask *= 2;
     });
     return value;
   };
