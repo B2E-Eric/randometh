@@ -4,11 +4,16 @@ const chalk = require("chalk");
 const Generator = require("../scripts/Generator");
 
 describe("Generators pair testing", function() {
+  let gInstance;
   let instance;
 
   beforeEach(async () => {
     const contract = await ethers.getContractFactory("Generator");
-    instance = await contract.deploy();
+    gInstance = await contract.deploy();
+    const testContract = await ethers.getContractFactory("GeneratorTesting", {
+      libraries: { Generator: gInstance.address }
+    });
+    instance = await testContract.deploy();
   });
 
   it("Starts with same hash as JS", async function() {
@@ -37,8 +42,8 @@ describe("Generators pair testing", function() {
     let solMutateValues;
 
     try {
-      solValues = await instance.dumpUInts(address, genes, count);
-      solMutateValues = await instance.dumpUInts(address, genes2, count);
+      solValues = await instance.dumpUInt8(address, genes, count);
+      solMutateValues = await instance.dumpUInt8(address, genes2, count);
     } catch (err) {
       console.error(err);
       solValues = [...Array(count)].map(() => 0);

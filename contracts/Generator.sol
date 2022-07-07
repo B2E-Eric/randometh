@@ -11,6 +11,26 @@ library Generator {
         uint256 index;
     }
 
+    /**
+     * @dev Pulls a uint16 [0-65536]
+     * @param key Seed of the generator
+     * @param genes Mutators of the generator
+     */
+    function createRand(address key, uint8[] memory genes)
+        public
+        pure
+        returns (Rand memory rand)
+    {
+        rand.seed = keccak256(abi.encodePacked(key));
+        rand.genes = genes;
+        rand.position = 0;
+    }
+
+    /**
+     * @dev Pulls a byte from seed
+     * @param rand Rand struct
+     * @param count number of bytes
+     */
     function read(Rand memory rand, uint16 count)
         internal
         pure
@@ -31,39 +51,17 @@ library Generator {
         return value;
     }
 
-    function getSeed(address key, uint8[] memory genes)
-        public
-        pure
-        returns (bytes32)
-    {
-        Rand memory rand = createRand(key, genes);
-
-        return (rand.seed);
-    }
-
-    function getBytes(
-        address key,
-        uint8[] memory genes,
-        uint16 count
-    ) public pure returns (bytes memory) {
-        return read(createRand(key, genes), count);
-    }
-
-    function bytesToUint(bytes memory b) internal pure returns (uint256) {
-        uint256 number;
-        for (uint i = 0; i < b.length; i++) {
-            number =
-                number +
-                uint(uint8(b[i])) *
-                (2**(8 * (b.length - (i + 1))));
-        }
-        return number;
-    }
-
     function abs(int x) private pure returns (int) {
         return x >= 0 ? x : -x;
     }
 
+    /**
+     * @dev Mutate output according to expressing genes
+     * @param index Index of output
+     * @param value Value pulled from seed
+     * @param max Max of value 
+     * @param genes Genes
+     */
     function mutate(
         uint256 index,
         uint value,
@@ -88,38 +86,37 @@ library Generator {
         return value;
     }
 
+    /**
+     * @dev Converts byte array into uint
+     * @param b array of bytes
+     */
+    function bytesToUint(bytes memory b) internal pure returns (uint256) {
+        uint256 number;
+        for (uint i = 0; i < b.length; i++) {
+            number =
+                number +
+                uint(uint8(b[i])) *
+                (2**(8 * (b.length - (i + 1))));
+        }
+        return number;
+    }
+
+    /**
+     * @dev Pulls a uint8 [0-255]
+     * @param rand Rand struct
+     */
     function popUInt8(Rand memory rand) internal pure returns (uint8) {
         uint8 number = uint8(read(rand, 1)[0]);
         return uint8(mutate(rand.index - 1, number, 256, rand.genes));
     }
 
+    /**
+     * @dev Pulls a uint16 [0-65536]
+     * @param rand Rand struct
+     */
     function popUInt16(Rand memory rand) internal pure returns (uint16) {
         uint16 number = uint16(bytesToUint(read(rand, 2)));
 
         return uint16(mutate(rand.index - 1, number, 65536, rand.genes));
-    }
-
-    function dumpUInts(
-        address key,
-        uint8[] memory genes,
-        uint256 count
-    ) external view returns (uint8[] memory) {
-        Rand memory rand = createRand(key, genes);
-        uint8[] memory values = new uint8[](count);
-
-        for (uint i = 0; i < count; i++) {
-            values[i] = popUInt8(rand);
-        }
-        return values;
-    }
-
-    function createRand(address key, uint8[] memory genes)
-        public
-        pure
-        returns (Rand memory rand)
-    {
-        rand.seed = keccak256(abi.encodePacked(key));
-        rand.genes = genes;
-        rand.position = 0;
     }
 }
