@@ -24,7 +24,7 @@ describe("Generators pair testing", function() {
   it("Outputs same uint suite as JS", async function() {
     const [owner, user] = await ethers.getSigners();
     const genes = [0, 0, 0, 0];
-    const genes2 = [0, 0, 0, 0, 100];
+    const genes2 = [0, 0, 100, 0, 0];
     const address = owner.address;
 
     const rnd = new Generator(address, genes);

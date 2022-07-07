@@ -13,21 +13,25 @@ class Generator {
     this.seed = ethers.utils.keccak256("0x" + this.seed).substring(2);
   };
 
-  mutate = value => {
+  mutate = (value, max) => {
+    const max2 = max * 2 - 1;
+    const bound = max * 4;
+
     let mask = 0;
     this.genes.forEach((gene, i) => {
       if ((this.index & mask) === mask) {
-        value = value + (gene / 2) % 256;
-        // value %= 256;
+        value += gene;
+        value = (max2 - Math.abs((2 * value) % bound - max2)) / 2
       }
       if (mask == 0 ) mask = 1; else mask *= 2;
     });
     return value;
   };
-
+  
   read = byteCount => {
     const fromByte = () => 2 * this.index;
     let toByte = () => fromByte() + 2 * byteCount;
+    const max = [256, 65536, 16777216, 4294967296]
 
     if (toByte() > this.seed.length) {
       this.hashSeed();
@@ -35,7 +39,7 @@ class Generator {
     }
 
     let value = parseInt(this.seed.substring(fromByte(), toByte()), 16);
-    value = this.mutate(value);
+    value = this.mutate(value, max[byteCount - 1]);
 
     return value;
   };
