@@ -48,11 +48,13 @@ library Generator {
             hashSeed(rand);
         }
 
-        for (uint i = 0; i < count; i++) {
-            value[i] = rand.seed[i + rand.position];
+        unchecked {
+            for (uint i = 0; i < count; i++ ) {
+                value[i] = rand.seed[i + rand.position];
+            }
+            rand.position += count;
+            rand.index += 1;
         }
-        rand.position += count;
-        rand.index += 1;
         return value;
     }
 
@@ -64,7 +66,7 @@ library Generator {
      * @dev Mutate output according to expressing genes
      * @param index Index of output
      * @param value Value pulled from seed
-     * @param max Max of value 
+     * @param max Max of value
      * @param genes Genes
      */
     function mutate(
@@ -73,20 +75,23 @@ library Generator {
         uint max,
         uint8[] memory genes
     ) internal pure returns (uint) {
-        uint length = genes.length;
-        uint max2 = max * 2 - 1;
-        uint bound = max * 4;
+        unchecked {
+            uint length = genes.length;
+            uint max2 = max * 2 - 1;
+            uint bound = max * 4;
 
-        uint256 mask = 0;
-        for (uint i = 0; i < length; i++) {
-            if ((index & mask) == mask) {
-                value += genes[i] * max / 256;
-                value = (2 * value) % bound;
-                value = uint(abs(int(value) - int(max2)));
-                value = (max2 - value) / 2;
+            uint256 mask = 0;
+            for (uint i = 0; i < length; ) {
+                if ((index & mask) == mask) {
+                    value += (genes[i] * max) / 256;
+                    value = (2 * value) % bound;
+                    value = uint(abs(int(value) - int(max2)));
+                    value = (max2 - value) / 2;
+                }
+                if (mask == 0) mask = 1;
+                else mask *= 2;
+                i++;
             }
-            if (mask == 0) mask = 1;
-            else mask *= 2;
         }
         return value;
     }
