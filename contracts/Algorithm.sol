@@ -8,12 +8,11 @@ contract Algorithm {
     using Generator for Generator.Rand;
     using Generator for address;
 
-    uint8[] stored;
     bool checked;
 
     function generateColor(address key, uint8[] memory genes)
         external
-        view
+        pure
         returns (uint8[] memory)
     {
         Generator.Rand memory rand = key.createRand(genes);
@@ -31,7 +30,6 @@ contract Algorithm {
         uint256 count
     ) external {
         Generator.Rand memory rand = key.createRand(genes);
-        uint8[] memory values = new uint8[](count);
 
         for (uint i = 0; i < count; i++) {
             rand.popUInt8();

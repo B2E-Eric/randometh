@@ -8,7 +8,7 @@ contract GeneratorTesting {
     using Generator for Generator.Rand;
     using Generator for address;
 
-    function dumpUInt8(address key, uint8[] memory genes, uint256 count) external view returns (uint8[] memory) {
+    function dumpUInt8(address key, uint8[] memory genes, uint256 count) external pure returns (uint8[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         uint8[] memory values = new uint8[](count);
 
@@ -18,7 +18,7 @@ contract GeneratorTesting {
         return values;
     }
 
-    function dumpUInt16(address key, uint8[] memory genes, uint256 count) external view returns (uint16[] memory) {
+    function dumpUInt16(address key, uint8[] memory genes, uint256 count) external pure returns (uint16[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         uint16[] memory values = new uint16[](count);
 
