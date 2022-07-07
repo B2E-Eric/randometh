@@ -51,14 +51,14 @@ describe("Algorithm", function() {
 
   it("Generates uint16", async function() {
     const [owner, user] = await ethers.getSigners();
-    const genes = [1, 20, 40, 80];
+    const genes = [1, 20, 40, 100];
     const colors = 16;
 
     const rnd = new Generator(owner.address, genes);
     const jsValues = [...Array(10)].map(() => rnd.popUInt16())
 
       console.log("rbg for gene mutation:");
-      console.log('sol:', ...(await instance.generateUInt16(owner.address, genes, 10)));
-      console.log('js:', ...jsValues);
+      console.log('sol :', ...(await instance.generateUInt16(owner.address, genes, 10)));
+      console.log('js  :', ...jsValues);
   });
 });

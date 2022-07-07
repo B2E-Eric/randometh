@@ -27,4 +27,4 @@ contract Algorithm {
         }
         return values;
     }
-}
+}       

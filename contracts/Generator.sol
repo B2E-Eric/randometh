@@ -7,6 +7,7 @@ library Generator {
     struct Rand {
         bytes32 seed;
         uint8[] genes;
+        uint256 position;
         uint256 index;
     }
 
@@ -17,15 +18,16 @@ library Generator {
     {
         bytes memory value = new bytes(count);
 
-        if (count + rand.index > rand.seed.length) {
+        if (count + rand.position > rand.seed.length) {
             rand.seed = keccak256(abi.encodePacked(rand.seed));
-            rand.index = 0;
+            rand.position = 0;
         }
 
         for (uint i = 0; i < count; i++) {
-            value[i] = rand.seed[i + rand.index];
+            value[i] = rand.seed[i + rand.position];
         }
-        rand.index += count;
+        rand.position += count;
+        rand.index += 1;
         return value;
     }
 
@@ -94,7 +96,7 @@ library Generator {
     function popUInt16(Rand memory rand) internal pure returns (uint16) {
         uint16 number = uint16(bytesToUint(read(rand, 2)));
 
-        return uint16(mutate(rand.index - 2, number, 65536, rand.genes));
+        return uint16(mutate(rand.index - 1, number, 65536, rand.genes));
     }
 
     function dumpUInts(
@@ -118,6 +120,6 @@ library Generator {
     {
         rand.seed = keccak256(abi.encodePacked(key));
         rand.genes = genes;
-        rand.index = 0;
+        rand.position = 0;
     }
 }
