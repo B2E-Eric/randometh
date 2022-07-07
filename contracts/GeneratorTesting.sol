@@ -28,7 +28,14 @@ contract GeneratorTesting {
         return values;
     }
 
-    function getSeed(address key, uint8[] memory genes) external pure returns (bytes32) {
-        return key.createRand(genes).seed;
+    function dumpSeeds(address key, uint8[] memory genes, uint256 count) external pure returns (bytes32[] memory) {
+        Generator.Rand memory rand = key.createRand(genes);
+        bytes32[] memory values = new bytes32[](count);
+
+        for (uint i = 0; i < count; i++) {
+            values[i] = rand.seed;
+            rand.hashSeed();
+        }
+        return values;
     }
 }       

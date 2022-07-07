@@ -3,6 +3,9 @@ const { ethers } = require("hardhat");
 const chalk = require("chalk");
 const Generator = require("../scripts/Generator");
 
+const zeros = n => Array(n).fill("0");
+const digits = (n, value) => [...zeros(n - value.length), value].join("");
+
 describe("Generators pair testing", function() {
   let gInstance;
   let instance;
@@ -16,14 +19,61 @@ describe("Generators pair testing", function() {
     instance = await testContract.deploy();
   });
 
-  it("Starts with same hash as JS", async function() {
+  it("Matches seed hashing", async function() {
     const [owner, user] = await ethers.getSigners();
     const genes = [0, 0, 0, 0];
+    const count = 64;
     const rnd = new Generator(owner.address, genes);
+    const solSeeds = await instance.dumpSeeds(owner.address, genes, count);
 
-    expect(await instance.getSeed(owner.address, genes)).to.equal(
-      "0x" + rnd.seed
+    solSeeds.forEach(seed => {
+      expect("0x" + rnd.seed).to.equal(seed);
+      rnd.hashSeed();
+    });
+  });
+
+  it("Matches mutation distribution", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const count = 32;
+    const mutation = 50;
+    const geneCount = 6;
+    const genome = i => [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
+
+    // [...Array(geneCount)].forEach((_, i) => {
+    //   console.log(genome(i));
+    // });
+
+    const bytes = i => {
+      const rnd = new Generator(owner.address, genome(i));
+      return [...Array(count)].map(() => digits(3, rnd.popUInt8().toString()));
+    };
+
+    const solBytes = async i => {
+      return (await instance.dumpUInt8(
+        owner.address,
+        genome(i),
+        count
+      )).map((v) => digits(3, v.toString()));
+    };
+
+    const fullSolBytes = await Promise.all(
+      [...Array(geneCount)].map(async (_, i) => solBytes(i))
     );
+
+    const original = bytes(-1);
+
+    console.log(`mutation distribution (${mutation})`);
+    console.log("bytes  :", ...original);
+
+    [...Array(geneCount)].forEach((byte, i) => {
+      const values = bytes(i);
+      const solValues = solBytes(i);
+      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
+      const displayed = bytes(i).map(
+        (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
+      );
+      console.log("gene", i, ":", ...displayed);
+    });
   });
 
   it("Outputs same uint suite as JS", async function() {
@@ -35,7 +85,7 @@ describe("Generators pair testing", function() {
     const rnd = new Generator(address, genes);
     const rnd2 = new Generator(address, genes2);
 
-    const count = 128;
+    const count = 64;
     const jsValues = [...Array(count)].map(() => rnd.popUInt8());
     const jsMutateValues = [...Array(count)].map(() => rnd2.popUInt8());
     let solValues;
@@ -50,8 +100,9 @@ describe("Generators pair testing", function() {
       solMutateValues = solValues;
     }
 
-    const colored = (v) => chalk.rgb(v, 255 - v, 70).visible(v);
-    const mutateArrow = (v1, v2) => chalk.rgb(v1 !== v2 ? 255 : 50, 50, 50).visible('->');
+    const colored = v => chalk.rgb(v, 255 - v, 70).visible(v);
+    const mutateArrow = (v1, v2) =>
+      chalk.rgb(v1 !== v2 ? 255 : 50, 50, 50).visible("->");
 
     console.log("uints: (js) vs. (sol)");
     jsValues.forEach((v, i) => {
@@ -62,7 +113,7 @@ describe("Generators pair testing", function() {
         colored(jsMutateValues[i]),
         colored(solValues[i]),
         mutateArrow(solValues[i], solMutateValues[i]),
-        colored(solMutateValues[i]),
+        colored(solMutateValues[i])
       );
     });
     jsValues.forEach((v, i) => {

@@ -11,6 +11,11 @@ library Generator {
         uint256 index;
     }
 
+    function hashSeed(Rand memory rand) internal pure {
+        rand.seed = keccak256(abi.encodePacked(rand.seed));
+        rand.position = 0;
+    }
+
     /**
      * @dev Pulls a uint16 [0-65536]
      * @param key Seed of the generator
@@ -22,8 +27,9 @@ library Generator {
         returns (Rand memory rand)
     {
         rand.seed = keccak256(abi.encodePacked(key));
-        rand.genes = genes;
         rand.position = 0;
+
+        rand.genes = genes;
     }
 
     /**
@@ -39,8 +45,7 @@ library Generator {
         bytes memory value = new bytes(count);
 
         if (count + rand.position > rand.seed.length) {
-            rand.seed = keccak256(abi.encodePacked(rand.seed));
-            rand.position = 0;
+            hashSeed(rand);
         }
 
         for (uint i = 0; i < count; i++) {
