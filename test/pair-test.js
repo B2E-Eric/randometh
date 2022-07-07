@@ -120,49 +120,23 @@ describe("Generators pair testing", function() {
     });
   });
 
-  it("Outputs same uint suite as JS", async function() {
+  it("Has fair value occurence", async function () {
     const [owner, user] = await ethers.getSigners();
-    const genes = [0, 0, 0, 0];
-    const genes2 = [0, 0, 100, 0, 0];
-    const address = owner.address;
+    const count = 100000;
+    const values = [0, 1, 128, 254, 255, 256];
+    const occurences = Array(values.length).fill(0);
 
-    const rnd = new Generator(address, genes);
-    const rnd2 = new Generator(address, genes2);
+    const rnd = new Generator(user.address, [0, 0, 0, 0]);
 
-    const count = 64;
-    const jsValues = [...Array(count)].map(() => rnd.popUInt8());
-    const jsMutateValues = [...Array(count)].map(() => rnd2.popUInt8());
-    let solValues;
-    let solMutateValues;
-
-    try {
-      solValues = await instance.dumpUInt8(address, genes, count);
-      solMutateValues = await instance.dumpUInt8(address, genes2, count);
-    } catch (err) {
-      console.error(err);
-      solValues = [...Array(count)].map(() => 0);
-      solMutateValues = solValues;
+    for (let i = 0; i < count; i++) {
+      const n = rnd.popUInt8();
+      values.forEach((value, idx) => {
+        if (value === n)
+          occurences[idx] = occurences[idx]  + 1;
+      })
     }
-
-    const colored = v => chalk.rgb(v, 255 - v, 70).visible(v);
-    const mutateArrow = (v1, v2) =>
-      chalk.rgb(v1 !== v2 ? 255 : 50, 50, 50).visible("->");
-
-    console.log("uints: (js) vs. (sol)");
-    jsValues.forEach((v, i) => {
-      console.log(
-        i + ":",
-        colored(v),
-        mutateArrow(v, jsMutateValues[i]),
-        colored(jsMutateValues[i]),
-        colored(solValues[i]),
-        mutateArrow(solValues[i], solMutateValues[i]),
-        colored(solMutateValues[i])
-      );
-    });
-    jsValues.forEach((v, i) => {
-      expect(solValues[i]).to.equal(v);
-      expect(solMutateValues[i]).to.equal(jsMutateValues[i]);
-    });
-  });
+    occurences.forEach((value, i) => {
+      console.log(values[i], ":", value);
+    })
+  })
 });
