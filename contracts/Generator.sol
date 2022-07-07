@@ -80,7 +80,7 @@ library Generator {
         uint256 mask = 0;
         for (uint i = 0; i < length; i++) {
             if ((index & mask) == mask) {
-                value = value + genes[i];
+                value += genes[i] * max / 256;
                 value = (2 * value) % bound;
                 value = uint(abs(int(value) - int(max2)));
                 value = (max2 - value) / 2;

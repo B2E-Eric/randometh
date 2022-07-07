@@ -21,9 +21,9 @@ describe("Algorithm", function() {
     const colors = 16;
 
     const callColor = async genes =>
-      await instance.generateColor(owner.address, genes);
+      await instance.generateColor(user.address, genes);
 
-      console.log("rbg for gene mutation:");
+    console.log("rbg for gene mutation:");
     for (let i = 0; i < colors; i++) {
       const geneMutationFactor = parseInt(i / colors * 256);
       let index = i.toString(16);
@@ -55,10 +55,30 @@ describe("Algorithm", function() {
     const colors = 16;
 
     const rnd = new Generator(owner.address, genes);
-    const jsValues = [...Array(10)].map(() => rnd.popUInt16())
+    const jsValues = [...Array(10)].map(() => rnd.popUInt16());
 
-      console.log("rbg for gene mutation:");
-      console.log('sol :', ...(await instance.generateUInt16(owner.address, genes, 10)));
-      console.log('js  :', ...jsValues);
+    console.log("rbg for gene mutation:");
+    console.log(
+      "sol :",
+      ...(await instance.generateUInt16(owner.address, genes, 10))
+    );
+    console.log("js  :", ...jsValues);
+  });
+
+  it("Costs coherent gas", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const genes = [1, 20, 40, 100];
+    const colors = 16;
+
+    const gasFor = async n => {
+      const txn = await instance.storeUint(owner.address, [10, 20, 30, 200], n);
+      return (await txn.wait()).cumulativeGasUsed.toNumber();
+    };
+
+    console.log("gas cost of n generation/storing");
+    await Promise.all([1, 10, 100, 1000].map(async (v) => {
+      const gas = await gasFor(v);
+      console.log(v, ':', gas, '=>', '~' + Math.round(gas / v), 'per call');
+    }));
   });
 });

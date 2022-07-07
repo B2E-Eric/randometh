@@ -29,7 +29,7 @@ class Generator {
     let mask = 0;
     this.genes.forEach((gene, i) => {
       if ((this.index & mask) === mask) {
-        value += gene;
+        value += gene * max / 256;
         value = (max2 - Math.abs((2 * value) % bound - max2)) / 2
       }
       if (mask == 0 ) mask = 1; else mask *= 2;

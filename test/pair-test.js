@@ -32,7 +32,7 @@ describe("Generators pair testing", function() {
     });
   });
 
-  it("Matches mutation distribution", async function() {
+  it("Matches mutation distribution on 1 byte", async function() {
     const [owner, user] = await ethers.getSigners();
     const count = 32;
     const mutation = 50;
@@ -54,6 +54,50 @@ describe("Generators pair testing", function() {
         genome(i),
         count
       )).map((v) => digits(3, v.toString()));
+    };
+
+    const fullSolBytes = await Promise.all(
+      [...Array(geneCount)].map(async (_, i) => solBytes(i))
+    );
+
+    const original = bytes(-1);
+
+    console.log(`mutation distribution (${mutation})`);
+    console.log("bytes  :", ...original);
+
+    [...Array(geneCount)].forEach((byte, i) => {
+      const values = bytes(i);
+      const solValues = solBytes(i);
+      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
+      const displayed = bytes(i).map(
+        (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
+      );
+      console.log("gene", i, ":", ...displayed);
+    });
+  });
+
+  it("Matches mutation distribution on 2 bytes", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const count = 21;
+    const mutation = 50;
+    const geneCount = 6;
+    const genome = i => [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
+
+    // [...Array(geneCount)].forEach((_, i) => {
+    //   console.log(genome(i));
+    // });
+
+    const bytes = i => {
+      const rnd = new Generator(owner.address, genome(i));
+      return [...Array(count)].map(() => digits(5, rnd.popUInt16().toString()));
+    };
+
+    const solBytes = async i => {
+      return (await instance.dumpUInt16(
+        owner.address,
+        genome(i),
+        count
+      )).map((v) => digits(5, v.toString()));
     };
 
     const fullSolBytes = await Promise.all(
