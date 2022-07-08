@@ -22,7 +22,7 @@ library Generator {
      * @param genes Mutators of the generator
      */
     function createRand(address key, uint8[] memory genes)
-        public
+        internal
         pure
         returns (Rand memory rand)
     {
@@ -58,7 +58,7 @@ library Generator {
         return value;
     }
 
-    function abs(int x) private pure returns (int) {
+    function abs(int x) internal pure returns (int) {
         return x >= 0 ? x : -x;
     }
 
