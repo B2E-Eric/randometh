@@ -49,7 +49,7 @@ library Generator {
         }
 
         unchecked {
-            for (uint i = 0; i < count; i++ ) {
+            for (uint i = 0; i < count; i++) {
                 value[i] = rand.seed[i + rand.position];
             }
             rand.position += count;
@@ -78,15 +78,21 @@ library Generator {
         unchecked {
             uint length = genes.length;
             uint max2 = max * 2 - 1;
-            uint bound = max * 4;
 
             uint256 mask = 0;
             for (uint i = 0; i < length; ) {
                 if ((index & mask) == mask) {
-                    value += (genes[i] * max) / 256;
-                    value = (2 * value) % bound;
-                    value = uint(abs(int(value) - int(max2)));
-                    value = (max2 - value) / 2;
+                    value =
+                        (max2 -
+                            uint(
+                                abs(
+                                    int(
+                                        (2 * (value + (genes[i] * max) / 256)) %
+                                            (max * 4)
+                                    ) - int(max2)
+                                )
+                            )) /
+                        2;
                 }
                 if (mask == 0) mask = 1;
                 else mask *= 2;
