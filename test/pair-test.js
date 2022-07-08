@@ -123,10 +123,10 @@ describe("Generators pair testing", function() {
   it("Has fair value occurence", async function () {
     const [owner, user] = await ethers.getSigners();
     const count = 100000;
-    const values = [0, 1, 128, 254, 255, 256];
+    const values = [0, 1, 128, 254, 255];
     const occurences = Array(values.length).fill(0);
 
-    const rnd = new Generator(user.address, [0, 0, 0, 0]);
+    const rnd = new Generator(owner.address, [0, 0, 0, 0]);
 
     for (let i = 0; i < count; i++) {
       const n = rnd.popUInt8();
