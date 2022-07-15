@@ -28,7 +28,7 @@ class Generator {
 
     let mask = 0;
     this.genes.forEach((gene, i) => {
-      if ((this.index & mask) === mask) {
+      if ((this.index - 1 & mask) === mask) {
         value += gene * max / 256;
         value = (max2 - Math.abs((2 * value) % bound - max2)) / 2
       }
@@ -41,7 +41,6 @@ class Generator {
   read = byteCount => {
     const fromByte = () => 2 * this.position;
     let toByte = () => fromByte() + 2 * byteCount;
-    const max = [256, 65536, 16777216, 4294967296]
 
     if (toByte() > this.seed.length) {
       this.hashSeed();
@@ -49,25 +48,33 @@ class Generator {
     }
 
     let value = parseInt(this.seed.substring(fromByte(), toByte()), 16);
-    value = this.mutate(value, max[byteCount - 1]);
     this.index += 1;
+    this.position += byteCount;
 
     return value;
   };
 
   //Pull a uint8 [0-255]
-  popUInt8 = () => {
-    const value = this.read(1);
-    this.position += 1;
+  popUInt8 = (applyMutation = true) => {
+    let value = this.read(1);
+    if (applyMutation) value = this.mutate(value, 256);
     return parseInt(value % 256);
   };
 
   //Pull a uint16 [0-65536]
-  popUInt16 = () => {
-    const value = this.read(2);
-    this.position += 2;
+  popUInt16 = (applyMutation = true) => {
+    let value = this.read(2);
+    if (applyMutation) value = this.mutate(value, 65536);
     return parseInt(value % 65536);
   };
+
+  popInt = (min, max, applyMutation = true) => {
+    let value = this.read(2);
+
+    if (applyMutation) value = this.mutate(value, 65536);
+    value = min + (max + 1 - min) * parseInt(value) / 65535;
+    return parseInt(value);
+  }
 }
 
 module.exports = Generator;

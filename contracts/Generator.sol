@@ -121,18 +121,51 @@ library Generator {
      * @dev Pulls a uint8 [0-255]
      * @param rand Rand struct
      */
-    function popUInt8(Rand memory rand) internal pure returns (uint8) {
+    function popUInt8(Rand memory rand, bool applyMutation)
+        internal
+        pure
+        returns (uint8)
+    {
         uint8 number = uint8(read(rand, 1)[0]);
-        return uint8(mutate(rand.index - 1, number, 256, rand.genes));
+        return
+            applyMutation
+                ? uint8(mutate(rand.index - 1, number, 256, rand.genes))
+                : number;
+    }
+
+    function popUInt8(Rand memory rand) internal pure returns (uint8) {
+        return popUInt8(rand, true);
     }
 
     /**
      * @dev Pulls a uint16 [0-65536]
      * @param rand Rand struct
      */
-    function popUInt16(Rand memory rand) internal pure returns (uint16) {
+    function popUInt16(Rand memory rand, bool applyMutation)
+        internal
+        pure
+        returns (uint16)
+    {
         uint16 number = uint16(bytesToUint(read(rand, 2)));
 
-        return uint16(mutate(rand.index - 1, number, 65536, rand.genes));
+        return
+            applyMutation
+                ? uint16(mutate(rand.index - 1, number, 65536, rand.genes))
+                : number;
+    }
+
+    function popUInt16(Rand memory rand) internal pure returns (uint16) {
+        return popUInt16(rand, true);
+    }
+
+    function popInt(Rand memory rand, int16 min, int16 max, bool applyMutation) internal pure returns (int16) {
+        uint16 number = uint16(bytesToUint(read(rand, 2)));
+
+        if (applyMutation) number = uint16(mutate(rand.index - 1, number, 65536, rand.genes));
+        return int16(min + (max+1 - min) * int(int16(number)) / 65535);
+    }
+
+    function popInt(Rand memory rand, int16 min, int16 max) internal pure returns (int16) {
+        return popInt(rand, min, max, true);
     }
 }

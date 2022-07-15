@@ -9,9 +9,7 @@ describe("Algorithm", function() {
   beforeEach(async () => {
     const genContract = await ethers.getContractFactory("Generator");
     const genInstance = await genContract.deploy();
-    const contract = await ethers.getContractFactory("Algorithm", {
-      libraries: { Generator: genInstance.address }
-    });
+    const contract = await ethers.getContractFactory("Algorithm");
     instance = await contract.deploy();
   });
 

@@ -13,9 +13,7 @@ describe("Generators pair testing", function() {
   beforeEach(async () => {
     const contract = await ethers.getContractFactory("Generator");
     gInstance = await contract.deploy();
-    const testContract = await ethers.getContractFactory("GeneratorTesting", {
-      libraries: { Generator: gInstance.address }
-    });
+    const testContract = await ethers.getContractFactory("GeneratorTesting");
     instance = await testContract.deploy();
   });
 
@@ -138,5 +136,24 @@ describe("Generators pair testing", function() {
     occurences.forEach((value, i) => {
       console.log(values[i], ":", value);
     })
+  })
+
+  it("Generates int with min/max", async function () {
+    const [owner, user] = await ethers.getSigners();
+    const count = 32;
+    const genes = [0, 0, 0, 0];
+    const min = -16;
+    const max = 10;
+    const rnd = new Generator(owner.address, genes);
+    const jsValues = [...Array(count)].map(() => rnd.popInt(min, max));
+    const solValues = await instance.dumpInt(owner.address, genes, min, max, count);
+
+    console.log("rbg for gene mutation:");
+    console.log(
+      "sol :",
+      ...solValues
+    );
+    console.log("js  :", ...jsValues);
+    jsValues.map((v, i) => expect(v).to.equal(solValues[i]))
   })
 });

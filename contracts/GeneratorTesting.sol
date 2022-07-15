@@ -28,6 +28,16 @@ contract GeneratorTesting {
         return values;
     }
 
+    function dumpInt(address key, uint8[] memory genes, int16 min, int16 max, uint256 count) external pure returns (int16[] memory) {
+        Generator.Rand memory rand = key.createRand(genes);
+        int16[] memory values = new int16[](count);
+
+        for (uint i = 0; i < count; i++) {
+            values[i] = rand.popInt(min, max);
+        }
+        return values;
+    }
+
     function dumpSeeds(address key, uint8[] memory genes, uint256 count) external pure returns (bytes32[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         bytes32[] memory values = new bytes32[](count);
