@@ -35,7 +35,7 @@ contract GeneratorTesting {
         int16[] memory values = new int16[](count);
 
         for (uint i = 0; i < count; i++) {
-            values[i] = rand.popInt(min, max);
+            values[i] = rand.popInt(min, max, false);
         }
         return values;
     }

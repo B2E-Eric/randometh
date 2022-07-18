@@ -189,9 +189,9 @@ library Generator {
         int16 max,
         bool applyMutation
     ) internal pure returns (int16) {
-        uint16 number = popUInt16(rand, applyMutation);
+        int16 number = int16(popUInt16(rand, applyMutation) >> 1);
 
-        return int16(min + ((max + 1 - min) * int(int16(number))) / 65535);
+        return int16(min + ((max + 1 - min) * int(int16(number))) / 32767);
     }
 
     function popInt(

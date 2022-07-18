@@ -145,10 +145,10 @@ describe("Generators pair testing", function() {
     const [owner, user] = await ethers.getSigners();
     const count = 32;
     const genes = [0, 0, 0, 0];
-    const min = -16;
+    const min = 0;
     const max = 10;
     const rnd = new Generator(owner.address, genes);
-    const jsValues = [...Array(count)].map(() => rnd.popInt(min, max));
+    const jsValues = [...Array(count)].map(() => rnd.popInt(min, max, false));
     const solValues = await instance.dumpInt(owner.address, genes, min, max, count);
 
     console.log("rbg for gene mutation:");

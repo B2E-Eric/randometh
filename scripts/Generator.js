@@ -72,8 +72,8 @@ class Generator {
     let value = this.read(2);
 
     if (applyMutation) value = this.mutate(value, 65536);
-    value = min + (max + 1 - min) * parseInt(value) / 65535;
-    return parseInt(value);
+    value = min + ((max + 1 - min) * (value >> 1) / 32767);
+    return Math.floor(value);
   }
 }
 
