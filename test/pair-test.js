@@ -108,24 +108,12 @@ describe("Generators pair testing", function() {
     console.log("bytes  :", ...(await solBytes(-1)));
     console.log("bytes  :", ...original);
 
-    [...Array(geneCount)].forEach((_, i) => {
+    await Promise.all([...Array(geneCount)].map(async (_, i) => {
       const displayed = bytes(i).map(
         (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
       );
       console.log("gene", i, ":", ...displayed);
-    });
-
-    for (let i = 0; i < geneCount;  i++) {
-      expect(await solBytes(i)).to.equal(bytes(i));
-    }
-
-    [...Array(geneCount)].forEach((_, i) => {
-      const solBytes = solBytes(i);
-      const displayed = bytes(i).map(
-        (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
-      );
-      console.log("gene", i, ":", ...displayed);
-    });
+    }));
 
     [...Array(geneCount)].forEach(async (_, i) => {
       const values = bytes(i);
