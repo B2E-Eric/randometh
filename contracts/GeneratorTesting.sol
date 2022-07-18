@@ -8,6 +8,8 @@ contract GeneratorTesting {
     using Generator for Generator.Rand;
     using Generator for address;
 
+    uint8 number;
+
     function dumpUInt8(address key, uint8[] memory genes, uint256 count) external pure returns (uint8[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         uint8[] memory values = new uint8[](count);
@@ -47,5 +49,10 @@ contract GeneratorTesting {
             rand.hashSeed();
         }
         return values;
+    }
+
+    function storeUInt8(address key, uint8[] memory genes) external {
+        Generator.Rand memory rand = key.createRand(genes);
+        number = rand.popUInt8();
     }
 }       

@@ -20,8 +20,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.4",
   gasReporter: {
-    currency: 'ETH',
-    coinmarketcap: '4c053119-3502-47be-a3e9-e7c71f53c126',
-    token: 'ETH',
+    currency: "ETH",
+    coinmarketcap: "4c053119-3502-47be-a3e9-e7c71f53c126",
+    token: "ETH"
+  },
+  networks: {
+    hardhat: {
+      config: {
+        loggingEnabled: "true"
+      }
+    }
   }
 };
