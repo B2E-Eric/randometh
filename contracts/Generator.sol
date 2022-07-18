@@ -35,24 +35,49 @@ library Generator {
     /**
      * @dev Pulls a byte from seed
      * @param rand Rand struct
-     * @param count number of bytes
      */
-    function read(Rand memory rand, uint16 count)
+    function read16(Rand memory rand)
         internal
         pure
-        returns (bytes memory)
+        returns (uint16)
     {
-        bytes memory value = new bytes(count);
+        // bytes memory value;
+        uint16 value;
 
-        if (count + rand.position > rand.seed.length) {
+        if (2 + rand.position > rand.seed.length) {
             hashSeed(rand);
         }
 
+        bytes memory seed = abi.encodePacked(rand.seed);
+        uint256 position = rand.position;
+
+        assembly {
+            value := mload(add(add(seed, 0x2), position))
+        }
+
         unchecked {
-            for (uint i = 0; i < count; i++) {
-                value[i] = rand.seed[i + rand.position];
-            }
-            rand.position += count;
+            rand.position += 2;
+            rand.index += 1;
+        }
+        return value;
+    }
+
+    function read8(Rand memory rand) internal pure returns (uint8) {
+        uint8 value;
+
+        if (1 + rand.position > rand.seed.length) {
+            hashSeed(rand);
+        }
+
+        bytes memory seed = abi.encodePacked(rand.seed);
+        uint256 position = rand.position;
+        // value = uint8(rand.seed[position]);
+        assembly {
+            value := mload(add(seed, add(0x1, position)))
+        }
+
+        unchecked {
+            rand.position += 1;
             rand.index += 1;
         }
         return value;
@@ -126,7 +151,7 @@ library Generator {
         pure
         returns (uint8)
     {
-        uint8 number = uint8(read(rand, 1)[0]);
+        uint8 number = read8(rand);
         return
             applyMutation
                 ? uint8(mutate(rand.index - 1, number, 256, rand.genes))
@@ -146,7 +171,7 @@ library Generator {
         pure
         returns (uint16)
     {
-        uint16 number = uint16(bytesToUint(read(rand, 2)));
+        uint16 number = read16(rand);
 
         return
             applyMutation
@@ -158,14 +183,22 @@ library Generator {
         return popUInt16(rand, true);
     }
 
-    function popInt(Rand memory rand, int16 min, int16 max, bool applyMutation) internal pure returns (int16) {
-        uint16 number = uint16(bytesToUint(read(rand, 2)));
+    function popInt(
+        Rand memory rand,
+        int16 min,
+        int16 max,
+        bool applyMutation
+    ) internal pure returns (int16) {
+        uint16 number = popUInt16(rand, applyMutation);
 
-        if (applyMutation) number = uint16(mutate(rand.index - 1, number, 65536, rand.genes));
-        return int16(min + (max+1 - min) * int(int16(number)) / 65535);
+        return int16(min + ((max + 1 - min) * int(int16(number))) / 65535);
     }
 
-    function popInt(Rand memory rand, int16 min, int16 max) internal pure returns (int16) {
+    function popInt(
+        Rand memory rand,
+        int16 min,
+        int16 max
+    ) internal pure returns (int16) {
         return popInt(rand, min, max, true);
     }
 }

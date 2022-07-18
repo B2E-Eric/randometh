@@ -35,7 +35,7 @@ describe("Generators pair testing", function() {
     const count = 32;
     const mutation = 50;
     const geneCount = 6;
-    const genome = i => [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
+    const genome = i => i === -1 ? [...Array(geneCount)].fill(0) : [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
 
     // [...Array(geneCount)].forEach((_, i) => {
     //   console.log(genome(i));
@@ -60,18 +60,22 @@ describe("Generators pair testing", function() {
 
     const original = bytes(-1);
 
-    console.log(`mutation distribution (${mutation})`);
+    console.log(`mutation distribution 1 byte (${mutation})`);
+    console.log("bytes  :", ...(await solBytes(-1)));
     console.log("bytes  :", ...original);
 
     [...Array(geneCount)].forEach((byte, i) => {
       const values = bytes(i);
       const solValues = solBytes(i);
-      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
       const displayed = bytes(i).map(
         (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
       );
       console.log("gene", i, ":", ...displayed);
     });
+    [...Array(geneCount)].forEach((byte, i) => {
+      const values = bytes(i);
+      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
+    })
   });
 
   it("Matches mutation distribution on 2 bytes", async function() {
@@ -79,11 +83,7 @@ describe("Generators pair testing", function() {
     const count = 21;
     const mutation = 50;
     const geneCount = 6;
-    const genome = i => [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
-
-    // [...Array(geneCount)].forEach((_, i) => {
-    //   console.log(genome(i));
-    // });
+    const genome = i => i === -1 ? [...Array(geneCount)].fill(0) : [...Array(geneCount)].fill(0).fill(mutation, i, i + 1);
 
     const bytes = i => {
       const rnd = new Generator(owner.address, genome(i));
@@ -105,16 +105,31 @@ describe("Generators pair testing", function() {
     const original = bytes(-1);
 
     console.log(`mutation distribution (${mutation})`);
+    console.log("bytes  :", ...(await solBytes(-1)));
     console.log("bytes  :", ...original);
 
-    [...Array(geneCount)].forEach((byte, i) => {
-      const values = bytes(i);
-      const solValues = solBytes(i);
-      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
+    [...Array(geneCount)].forEach((_, i) => {
       const displayed = bytes(i).map(
         (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
       );
       console.log("gene", i, ":", ...displayed);
+    });
+
+    for (let i = 0; i < geneCount;  i++) {
+      expect(await solBytes(i)).to.equal(bytes(i));
+    }
+
+    [...Array(geneCount)].forEach((_, i) => {
+      const solBytes = solBytes(i);
+      const displayed = bytes(i).map(
+        (v, i) => (v === original[i] ? chalk.red(v) : chalk.green(v))
+      );
+      console.log("gene", i, ":", ...displayed);
+    });
+
+    [...Array(geneCount)].forEach(async (_, i) => {
+      const values = bytes(i);
+      values.forEach((v, idx) => expect(v).to.equal(fullSolBytes[i][idx]));
     });
   });
 

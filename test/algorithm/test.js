@@ -74,7 +74,7 @@ describe("Algorithm", function() {
     };
 
     console.log("gas cost of n generation/storing");
-    await Promise.all([1, 10, 100, 1000].map(async (v) => {
+    await Promise.all([1, 10].map(async (v) => {
       const gas = await gasFor(v);
       console.log(v, ':', gas, '=>', '~' + Math.round(gas / v), 'per call');
     }));
