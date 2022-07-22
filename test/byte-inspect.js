@@ -110,4 +110,19 @@ describe("Generators pair testing", function() {
       }
     }
   });
+
+  it("Gene impact", async function() {
+    const [owner, user] = await ethers.getSigners();
+    const address = user.address;
+    const genes = [0, 0, 0, 0];
+    const geneCount = 10;
+    const count = 5;
+    
+    for (let gene = 0; gene < 256; gene += 256 / geneCount) {
+      const rnd = new Generator(address, [Math.floor(gene)]);
+      console.log("gene", Math.floor(gene));
+      console.log(...[...Array(count)].map(() => rnd.popUInt8()))
+    }
+
+  });
 });

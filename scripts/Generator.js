@@ -28,15 +28,16 @@ class Generator {
 
     let mask = 0;
     this.genes.forEach((gene, i) => {
-      if ((this.index - 1 & mask) === mask) {
+      if (((this.index - 1) & mask) === mask) {
         value += gene * max / 256;
-        value = (max2 - Math.abs((2 * value) % bound - max2)) / 2
+        value = (max2 - Math.abs(2 * value % bound - max2)) / 2;
       }
-      if (mask == 0 ) mask = 1; else mask *= 2;
+      if (mask == 0) mask = 1;
+      else mask *= 2;
     });
     return value;
   };
-  
+
   //Pulls a byte from seed
   read = byteCount => {
     const fromByte = () => 2 * this.position;
@@ -72,9 +73,9 @@ class Generator {
     let value = this.read(2);
 
     if (applyMutation) value = this.mutate(value, 65536);
-    value = min + ((max + 1 - min) * (value >> 1) / 32767);
+    value = min + (max + 1 - min) * (value >> 1) / 32767;
     return Math.floor(value);
-  }
+  };
 }
 
 module.exports = Generator;

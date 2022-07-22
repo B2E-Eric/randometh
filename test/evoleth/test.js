@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const chalk = require("chalk");
-const Generator = require("../../scripts/Generator");
+const Generator = require("../../scripts/Generator").default;
 
 describe("Algorithm", function() {
   let instance;
