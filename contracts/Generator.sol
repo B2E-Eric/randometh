@@ -102,7 +102,6 @@ library Generator {
     ) internal pure returns (uint) {
         unchecked {
             uint length = genes.length;
-            uint max2 = max * 2 - 1;
 
             uint256 mask = 0;
             for (uint i = 0; i < length; ) {
