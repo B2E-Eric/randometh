@@ -56,10 +56,9 @@ describe("Generators pair testing", function() {
   });
 
   describe("Gene influence", async function() {
-    const matchForNBytes = async function(bytes, count = 32 / bytes, log = true) {
+    const matchForNBytes = async function(bytes, count = 32 / bytes, log = true, mutation = 50) {
       const [owner] = await ethers.getSigners();
       const address = owner.address;
-      const mutation = 50;
       const geneCount = 6;
       const genome = i =>
         i === -1
@@ -96,9 +95,10 @@ describe("Generators pair testing", function() {
       );
     };
     it("Display gene influence on 1 byte", async () => matchForNBytes(1));
-    it("Matches gene influence on 1 byte", async () => matchForNBytes(2, 500, false));
-    it("Matches gene influence on 2 byte", async () => matchForNBytes(2, 500, false));
-    it("Matches gene influence for max gene on 1 byte", async () => matchForNBytes(2, 100, false));
+    it("Matches gene influence on 1 byte", async () => matchForNBytes(2, 128, false));
+    it("Matches gene influence on 2 byte", async () => matchForNBytes(2, 128, false));
+    it("Matches gene influence for max gene on 1 byte", async () => matchForNBytes(2, 100, false, 511));
+
     it("Has fair value occurence", async function() {
       const [owner, user] = await ethers.getSigners();
       const count = 100000;

@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 library Generator {
     struct Rand {
         bytes32 seed;
-        uint8[] genes;
+        uint16[] genes;
         uint256 position;
         uint256 index;
     }
@@ -21,7 +21,7 @@ library Generator {
      * @param key Seed of the generator
      * @param genes Mutators of the generator
      */
-    function createRand(address key, uint8[] memory genes)
+    function createRand(address key, uint16[] memory genes)
         internal
         pure
         returns (Rand memory rand)
@@ -98,7 +98,7 @@ library Generator {
         uint256 index,
         uint value,
         uint max,
-        uint8[] memory genes
+        uint16[] memory genes
     ) internal pure returns (uint) {
         unchecked {
             uint length = genes.length;

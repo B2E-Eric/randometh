@@ -10,7 +10,7 @@ contract GeneratorTesting {
 
     uint8 number;
 
-    function dumpUInt8(address key, uint8[] memory genes, uint256 count) external pure returns (uint8[] memory) {
+    function dumpUInt8(address key, uint16[] memory genes, uint256 count) external pure returns (uint8[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         uint8[] memory values = new uint8[](count);
 
@@ -20,7 +20,7 @@ contract GeneratorTesting {
         return values;
     }
 
-    function dumpUInt16(address key, uint8[] memory genes, uint256 count) external pure returns (uint16[] memory) {
+    function dumpUInt16(address key, uint16[] memory genes, uint256 count) external pure returns (uint16[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         uint16[] memory values = new uint16[](count);
 
@@ -30,7 +30,7 @@ contract GeneratorTesting {
         return values;
     }
 
-    function dumpInt(address key, uint8[] memory genes, int16 min, int16 max, uint256 count) external pure returns (int16[] memory) {
+    function dumpInt(address key, uint16[] memory genes, int16 min, int16 max, uint256 count) external pure returns (int16[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         int16[] memory values = new int16[](count);
 
@@ -40,7 +40,7 @@ contract GeneratorTesting {
         return values;
     }
 
-    function dumpSeeds(address key, uint8[] memory genes, uint256 count) external pure returns (bytes32[] memory) {
+    function dumpSeeds(address key, uint16[] memory genes, uint256 count) external pure returns (bytes32[] memory) {
         Generator.Rand memory rand = key.createRand(genes);
         bytes32[] memory values = new bytes32[](count);
 
@@ -51,7 +51,7 @@ contract GeneratorTesting {
         return values;
     }
 
-    function storeUInt8(address key, uint8[] memory genes) external {
+    function storeUInt8(address key, uint16[] memory genes) external {
         Generator.Rand memory rand = key.createRand(genes);
         number = rand.popUInt8();
     }
