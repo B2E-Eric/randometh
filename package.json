@@ -1,5 +1,9 @@
 {
   "name": "randometh",
+  "files": [
+    "**/*.sol",
+    "/build/contracts/*.json"
+  ],
   "private": true,
   "version": "0.1.0",
   "license": "MIT",
@@ -18,4 +22,5 @@
   "scripts": {
     "test": "npx hardhat test"
   }
+  
 }
