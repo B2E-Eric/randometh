@@ -3,6 +3,7 @@
   "main": "index.js",
   "files": [
     "**/*.sol",
+    "scripts/*.js",
     "/build/contracts/*.json"
   ],
   "private": true,
