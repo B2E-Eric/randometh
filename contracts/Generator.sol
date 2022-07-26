@@ -107,22 +107,14 @@ library Generator {
             uint256 mask = 0;
             for (uint i = 0; i < length; ) {
                 if ((index & mask) == mask) {
-                    value =
-                        (max2 -
-                            uint(
-                                abs(
-                                    int(
-                                        (2 * (value + (genes[i] * max) / 256)) %
-                                            (max * 4)
-                                    ) - int(max2)
-                                )
-                            )) /
-                        2;
+                    value += genes[i] * max / 256;
                 }
+                value = (value + 2 * max) % (2 * max);
                 if (mask == 0) mask = 1;
                 else mask *= 2;
                 i++;
             }
+            value = max-1-uint(abs(int(max-1-value)));
         }
         return value;
     }

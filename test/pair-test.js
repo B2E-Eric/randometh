@@ -98,6 +98,7 @@ describe("Generators pair testing", function() {
     it("Display gene influence on 1 byte", async () => matchForNBytes(1));
     it("Matches gene influence on 1 byte", async () => matchForNBytes(2, 500, false));
     it("Matches gene influence on 2 byte", async () => matchForNBytes(2, 500, false));
+    it("Matches gene influence for max gene on 1 byte", async () => matchForNBytes(2, 100, false));
     it("Has fair value occurence", async function() {
       const [owner, user] = await ethers.getSigners();
       const count = 100000;
