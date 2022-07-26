@@ -2,6 +2,11 @@
 Pseudo random generator from an Ethereum address.
 This is a seed-based generator, meant to generate assets, not secure gambling.
 
+## Install
+```
+npm install https://github.com/B2E-Eric/randometh
+```
+
 ## Usage
 ### Solidity
 You can use the library in your contract like so:
