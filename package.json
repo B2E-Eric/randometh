@@ -1,5 +1,6 @@
 {
   "name": "randometh",
+  "main": "index.js",
   "files": [
     "**/*.sol",
     "/build/contracts/*.json"
