@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 library Generator {
+
     struct Rand {
         bytes32 seed;
         uint16[] genes;
@@ -11,6 +12,10 @@ library Generator {
         uint256 index;
     }
 
+    /**
+     * @dev Hash the key to get a new seed
+     * @param rand Rand struct
+     */
     function hashSeed(Rand memory rand) internal pure {
         rand.seed = keccak256(abi.encodePacked(rand.seed));
         rand.position = 0;
@@ -33,7 +38,7 @@ library Generator {
     }
 
     /**
-     * @dev Pulls a byte from seed
+     * @dev Pulls 2 bytes from seed
      * @param rand Rand struct
      */
     function read16(Rand memory rand)
@@ -62,6 +67,10 @@ library Generator {
         return value;
     }
 
+    /**
+     * @dev Pulls a byte from seed
+     * @param rand Rand struct
+     */
     function read8(Rand memory rand) internal pure returns (uint8) {
         uint8 value;
 
@@ -119,23 +128,9 @@ library Generator {
     }
 
     /**
-     * @dev Converts byte array into uint
-     * @param b array of bytes
-     */
-    function bytesToUint(bytes memory b) internal pure returns (uint256) {
-        uint256 number;
-        for (uint i = 0; i < b.length; i++) {
-            number =
-                number +
-                uint(uint8(b[i])) *
-                (2**(8 * (b.length - (i + 1))));
-        }
-        return number;
-    }
-
-    /**
      * @dev Pulls a uint8 [0-255]
      * @param rand Rand struct
+     * @param applyMutation Influence number with genes
      */
     function popUInt8(Rand memory rand, bool applyMutation)
         internal
@@ -156,6 +151,7 @@ library Generator {
     /**
      * @dev Pulls a uint16 [0-65536]
      * @param rand Rand struct
+     * @param applyMutation Influence number with genes
      */
     function popUInt16(Rand memory rand, bool applyMutation)
         internal
@@ -174,6 +170,13 @@ library Generator {
         return popUInt16(rand, true);
     }
 
+    /**
+     * @dev Pulls an int from min to max
+     * @param rand Rand struct
+     * @param min Lower bound
+     * @param max Upper bound
+     * @param applyMutation Influence number with genes
+     */
     function popInt(
         Rand memory rand,
         int16 min,
