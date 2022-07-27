@@ -2,9 +2,8 @@
   "name": "randometh",
   "main": "index.js",
   "files": [
-    "**/*.sol",
-    "scripts/*.js",
-    "/build/contracts/*.json"
+    "contracts/Generator.sol",
+    "scripts/Generator.js"
   ],
   "keywords": [
     "random", "ethereum", "solidity"
